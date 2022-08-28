@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockSF2_Clientes.DTOs;
 using StockSF2_Clientes.Modelos;
+using StockSF2_Clientes.Util;
 
 namespace StockSF2_Clientes.Controllers
 {
     [ApiController]
     [Route("api/clientes")]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     public class ClientesController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -21,9 +25,13 @@ namespace StockSF2_Clientes.Controllers
         }
 
         [HttpGet(Name = "obtenerClientes")]
-        public async Task<ActionResult<List<ClienteDTO>>> GetTodos()
+        public async Task<ActionResult<List<ClienteDTO>>> GetTodos([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var resultado = await context.Clientes.ToListAsync();
+            var queryable=context.Clientes.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
+            var resultado= await queryable.Paginar(paginacionDTO).ToListAsync();
+            //var resultado = await context.Clientes.ToListAsync();
+
             return mapper.Map<List<ClienteDTO>>(resultado);
         }
 

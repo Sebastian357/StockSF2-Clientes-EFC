@@ -13,6 +13,7 @@ namespace StockSF2_Clientes.Controllers
 {
     [ApiController]
     [Route("api/usuarios")]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     public class UsuariosController:ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -33,6 +34,7 @@ namespace StockSF2_Clientes.Controllers
         public SignInManager<IdentityUser> SignInManager { get; }
 
         [HttpPost("registrar")]
+        [AllowAnonymous] //do not requires auth
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialUsuario credencialUsuario)
         {
             var usuario = new IdentityUser
@@ -53,7 +55,8 @@ namespace StockSF2_Clientes.Controllers
                       
         }
 
-        [HttpPost("login")]
+        [HttpPost("login")] 
+        [AllowAnonymous] //do not requires auth
         public async Task <ActionResult<RespuestaAutenticacion>> Login (CredencialUsuario credencialUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialUsuario.Email, credencialUsuario.Password, isPersistent: false, lockoutOnFailure: false);
