@@ -13,6 +13,8 @@ namespace StockSF2_Clientes.Util
             double cantidad = await queryable.CountAsync();//cuento los registros
             double cantidadPaginas = Math.Ceiling(cantidad / cantidadRegistrosPorPagina);
             httpContext.Response.Headers.Add("cantidadPaginas", cantidadPaginas.ToString());
+            // a ver q onda git
+
         }
     }
 }
